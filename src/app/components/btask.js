@@ -1,16 +1,4 @@
-"use client";
-import React, { useEffect, useState } from "react";
-
-function Btask({ task, uid }) {
-  // const [cookies, setCookie] = useCookies(["uid"]);
-  // const [user, setUser] = useState(false);
-
-  // useEffect(() => {
-  //   if (cookies.uid) {
-  //     setUser(true);
-  //   }
-  // }, []);
-
+function Btask({ task }) {
   return (
     <>
       <div className="w-4/5 h-[500px] bg-slate-600 rounded-lg text-white px-14 items-center justify-center text-center flex flex-col overflow-hidden">

@@ -5,12 +5,16 @@ function Login() {
   async function createUser(form) {
     "use server";
 
-    const res = await axios.post("http://localhost:8000/v1/user/create", {
-      username: form.get("username"),
-      age: form.get("age"),
-      email: form.get("email"),
-    });
-    cookies().set("uid", res.data.data);
+    try {
+      const res = await axios.post("http://localhost:8000/v1/user/create", {
+        username: form.get("username"),
+        age: form.get("age"),
+        email: form.get("email"),
+      });
+      cookies().set("uid", res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -22,22 +26,23 @@ function Login() {
       {/* username */}
       <div className="flex flex-col items-center justify-center text-center">
         <label>username</label>
-        <input className="text-center" />
+        <input className="text-center" name="username" />
       </div>
       {/* age */}
       <div className="flex flex-col items-center justify-center text-center">
         <label>age</label>
-        <input className="text-center" />
+        <input className="text-center" name="age" />
       </div>
 
       {/* email */}
       <div className="flex flex-col items-center justify-center text-center">
         <label>email</label>
-        <input className="text-center" />
+        <input className="text-center" name="email" />
       </div>
 
-      <button type="submit"> Signup </button>
-      <input />
+      <button type="submit" className="h-10 w-16 text-yellow-300 bg-slate-500">
+        Signup
+      </button>
     </form>
   );
 }

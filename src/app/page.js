@@ -2,6 +2,8 @@ import axios from "axios";
 import Btask from "./components/btask";
 import Login from "./components/login";
 import { cookies } from "next/headers";
+import Chat from "./components/chat";
+import Convo from "./components/conversation";
 
 export default async function Home() {
   const cookieStore = cookies();
@@ -14,15 +16,8 @@ export default async function Home() {
     }
   });
 
-  console.log(hasCookie);
-
   const tasks = await axios.get("http://localhost:8000/v1/questions/start");
-
-  const makeConvo = async (chat) => {
-    const res = await axios.post(
-      `http://localhost:8000/v1/questions/create/${uid}`
-    );
-  };
+  const conversation = await axios.get(`http://localhost:8000/v1/questions/conversation/${uid}`)
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 relative overflow-scroll">
@@ -30,11 +25,13 @@ export default async function Home() {
       {hasCookie ? (
         <>
           {/* BEGINNING TASK */}
-          <Btask task={tasks.data.data} uid={uid} />
-          {/* CHAT */}
+          <Btask task={tasks.data.data} />
+          
+          {/* CONVERSATION  */}
+          <Convo conversations={conversation}/>
 
-          {/* USER INPUT  */}
-          <Input />
+          {/* CHAT */}
+          <Chat uid={uid}/>
         </>
       ) : (
         <Login />
