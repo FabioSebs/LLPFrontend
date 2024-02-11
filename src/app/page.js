@@ -4,6 +4,7 @@ import Login from "./components/login";
 import { cookies } from "next/headers";
 import Chat from "./components/chat";
 import Convo from "./components/conversation";
+import Survey from "./components/survey";
 
 export default async function Home() {
   const cookieStore = cookies();
@@ -16,22 +17,40 @@ export default async function Home() {
     }
   });
 
-  const tasks = await axios.get("http://localhost:8000/v1/questions/start");
-  const conversation = await axios.get(`http://localhost:8000/v1/questions/conversation/${uid}`)
+  var tasks, conversation, survey;
+  try {
+    tasks = await axios.get("http://localhost:8000/v1/questions/start");
+    conversation = await axios.get(
+      `http://localhost:8000/v1/questions/conversation/${uid}`
+    );
+    survey = await axios.get(`http://localhost:8000/v1/survey/${uid}`);
+  } catch (error) {
+    console.log(error);
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 relative overflow-scroll">
       {/* LOGIN */}
       {hasCookie ? (
         <>
-          {/* BEGINNING TASK */}
-          <Btask task={tasks.data.data} />
-          
-          {/* CONVERSATION  */}
-          <Convo conversations={conversation}/>
+          {conversation.data.data.freq == 0 ||
+          conversation.data.data.freq % 10 != 0 ? (
+            // Can do 10 Questions
+            <>
+              {/* BEGINNING TASK */}
+              <Btask task={tasks.data.data} />
 
-          {/* CHAT */}
-          <Chat uid={uid}/>
+              {/* CONVERSATION  */}
+              <Convo conversations={conversation.data.data.convo} />
+
+              {/* CHAT */}
+              <Chat uid={uid} />
+            </>
+          ) : (
+            <>
+              <Survey uid={uid} survey={survey} />
+            </>
+          )}
         </>
       ) : (
         <Login />

@@ -4,7 +4,7 @@ function Convo({conversations}) {
   return (
     <>
     {conversations ? 
-    <div className='h-28 w-3/4 overflow-y-scroll'> 
+    <div className='h-[350px] w-3/4 overflow-y-scroll flex flex-col bg-orange-200 rounded-lg px-10 my-10'> 
         <ConvoList conversations={conversations}/> 
     </div>: <></>}
     </>
@@ -14,17 +14,16 @@ function Convo({conversations}) {
 function ConvoList({conversations}) {
     return (
         <>
-            {conversations.map(c => {
-                switch(c.recipient) {
-                    case 'ai':
-                        return <div className='w-3/4 h-14 rounded-lg px-3 justify-end bg-slate-500 text-white'>{c.message}</div>
-                    case 'human':
-                        return <div className='w-3/4 h-14 rounded-lg px-3 justify-end bg-yellow-300 text-black'>{c.message}</div>
-                    default:
-                        return <></>
-                }
-
-            })}
+           {conversations.map(convo => {
+                return (
+                    <>
+                        <div className='flex flex-col w-full'>
+                            <div className='bg-slate-500 text-white rounded-lg w-auto h-auto p-2 my-3 border-black border-2'>{convo.question}</div>
+                            <div className='bg-yellow-300 text-black rounded-lg h-auto p-2 my-3 border-black border-2'>AI : {convo.response}</div>
+                        </div>
+                    </>
+                )
+           })}
         </>
     )
 }

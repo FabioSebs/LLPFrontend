@@ -5,7 +5,7 @@ function Chat({uid}) {
     async function makeChat(form) {
         "use server";
         try {
-            const res = await axios.post(`/v1/questions/create/${uid}`,{ //NOTE: append to conversations
+            const res = await axios.post(`http://localhost:8000/v1/questions/create/${uid}`,{ //NOTE: append to conversations
                 question: form.get("question") 
             })
 
