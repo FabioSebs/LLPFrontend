@@ -19,11 +19,11 @@ export default async function Home() {
 
   var tasks, conversation, survey;
   try {
-    tasks = await axios.get(`${process.env.BACKEND_URL}/v1/questions/start`);
+    tasks = await axios.get(`https://fabrzy.dev/api/v1/questions/start`);
     conversation = await axios.get(
-      `${process.env.BACKEND_URL}/v1/questions/conversation/${uid}`
+      `https://fabrzy.dev/api/v1/questions/conversation/${uid}`
     );
-    survey = await axios.get(`${process.env.BACKEND_URL}/v1/survey/`);
+    survey = await axios.get(`https://fabrzy.dev/api/v1/survey/`);
   } catch (error) {
     console.log(error);
   }
