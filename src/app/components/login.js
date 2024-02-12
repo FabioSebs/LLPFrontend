@@ -6,11 +6,14 @@ function Login() {
     "use server";
 
     try {
-      const res = await axios.post("http://localhost:8000/v1/user/create", {
-        username: form.get("username"),
-        age: form.get("age"),
-        email: form.get("email"),
-      });
+      const res = await axios.post(
+        `${process.env.BACKEND_URL}/v1/user/create`,
+        {
+          username: form.get("username"),
+          age: form.get("age"),
+          email: form.get("email"),
+        }
+      );
       cookies().set("uid", res.data.data);
     } catch (error) {
       console.log(error);

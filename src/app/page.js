@@ -19,11 +19,11 @@ export default async function Home() {
 
   var tasks, conversation, survey;
   try {
-    tasks = await axios.get("http://localhost:8000/v1/questions/start");
+    tasks = await axios.get(`${process.env.BACKEND_URL}/v1/questions/start`);
     conversation = await axios.get(
-      `http://localhost:8000/v1/questions/conversation/${uid}`
+      `${process.env.BACKEND_URL}/v1/questions/conversation/${uid}`
     );
-    survey = await axios.get(`http://localhost:8000/v1/survey/${uid}`);
+    survey = await axios.get(`${process.env.BACKEND_URL}/v1/survey/`);
   } catch (error) {
     console.log(error);
   }
@@ -33,8 +33,8 @@ export default async function Home() {
       {/* LOGIN */}
       {hasCookie ? (
         <>
-          {conversation.data.data.freq == 0 ||
-          conversation.data.data.freq % 10 != 0 ? (
+          {conversation.data.data.frequency == 0 ||
+          conversation.data.data.frequency % 10 != 0 ? (
             // Can do 10 Questions
             <>
               {/* BEGINNING TASK */}
@@ -48,7 +48,7 @@ export default async function Home() {
             </>
           ) : (
             <>
-              <Survey uid={uid} survey={survey} />
+              <Survey uid={uid} survey={survey.data.data} />
             </>
           )}
         </>
