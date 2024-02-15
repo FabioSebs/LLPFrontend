@@ -1,13 +1,12 @@
 import axios from "axios";
 import { revalidatePath } from "next/cache";
-import { Suspense } from "react";
 
 function Chat({ uid }) {
   async function makeChat(form) {
     "use server";
     try {
       const res = await axios.post(
-        `http://localhost:8000/v1/questions/create/${uid}`,
+        `${process.env.BACKEND_LOCAL}/v1/questions/create/${uid}`,
         {
           //NOTE: append to conversations
           question: form.get("question"),

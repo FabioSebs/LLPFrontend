@@ -11,7 +11,7 @@ function Survey({ survey, uid }) {
     });
 
     const _ = await axios.post(
-      `https://fabrzy.dev/api/v1/survey/create${uid}`,
+      `${process.env.BACKEND_LOCAL}/v1/survey/create${uid}`,
       {
         results: answers,
       }

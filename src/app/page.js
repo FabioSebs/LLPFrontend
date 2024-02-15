@@ -1,10 +1,8 @@
-import axios from "axios";
-import Btask from "./components/btask";
 import Login from "./components/login";
 import { cookies } from "next/headers";
-import Chat from "./components/chat";
-import Convo from "./components/conversation";
 import Survey from "./components/survey";
+import { GetConversations, GetSurvey, GetTask } from "../../lib/requests";
+import AiProgram from "./components/aiprogram";
 
 export default async function Home() {
   const cookieStore = cookies();
@@ -17,39 +15,30 @@ export default async function Home() {
     }
   });
 
-  var tasks, conversation, survey;
+  var conversation, survey, tasks;
   try {
-    tasks = await axios.get(`https://fabrzy.dev/api/v1/questions/start`);
-    conversation = await axios.get(
-      `https://fabrzy.dev/api/v1/questions/conversation/${uid}`
-    );
-    survey = await axios.get(`https://fabrzy.dev/api/v1/survey/`);
+    conversation = await GetConversations(uid);
+    survey = await GetSurvey();
+    tasks = await GetTask();
   } catch (error) {
     console.log(error);
   }
 
+  console.log(conversation.data.data.frequency);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 relative overflow-scroll">
+    <main className="flex min-h-screen w-full flex-col items-center justify-between p-24 relative overflow-scroll">
       {/* LOGIN */}
       {hasCookie ? (
         <>
-          {conversation.data.data.frequency == 0 ||
-          conversation.data.data.frequency % 10 != 0 ? (
-            // Can do 10 Questions
-            <>
-              {/* BEGINNING TASK */}
-              <Btask task={tasks.data.data} />
-
-              {/* CONVERSATION  */}
-              <Convo conversations={conversation.data.data.convo} />
-
-              {/* CHAT */}
-              <Chat uid={uid} />
-            </>
+          {conversation.data.data.frequency != 10 ? (
+            <div className="w-full h-full">
+              <AiProgram tasks={tasks} conversation={conversation} uid={uid} />
+            </div>
           ) : (
-            <>
+            <div className="w-full h-full">
               <Survey uid={uid} survey={survey.data.data} />
-            </>
+            </div>
           )}
         </>
       ) : (

@@ -1,24 +1,27 @@
+"use client";
 import React from "react";
 import { Suspense } from "react";
 import Loading from "../loading";
 
 function Convo({ conversations }) {
   return (
-    <>
+    <div>
       {conversations ? (
-        <div className="h-[350px] w-3/4 overflow-y-scroll flex flex-col bg-orange-200 rounded-lg px-10 my-10">
-          <ConvoList conversations={conversations} />
-        </div>
+        <Suspense fallback={<Loading />}>
+          <div className="h-[350px] w-3/4 overflow-y-scroll flex flex-col bg-orange-200 rounded-lg px-10 my-10">
+            <ConvoList conversations={conversations} />
+          </div>
+        </Suspense>
       ) : (
         <></>
       )}
-    </>
+    </div>
   );
 }
 
 function ConvoList({ conversations }) {
   return (
-    <Suspense fallback={<Loading />}>
+    <div className="h-full w-full">
       {conversations.map((convo) => {
         return (
           <>
@@ -33,7 +36,7 @@ function ConvoList({ conversations }) {
           </>
         );
       })}
-    </Suspense>
+    </div>
   );
 }
 
