@@ -1,7 +1,7 @@
-import axios from "axios";
 import React from "react";
 
 function Survey({ survey, uid }) {
+  // action
   async function SurveySubmit(form) {
     "use server";
     var numberOfQuestions = [...Array(10).keys()].map((x) => x + 1);
@@ -10,18 +10,13 @@ function Survey({ survey, uid }) {
       return { questionNo: number, answer: form.get("#" + number) };
     });
 
-    const _ = await axios.post(
-      `${process.env.BACKEND_LOCAL}/v1/survey/create${uid}`,
-      {
+    await fetch(`${process.env.BACKEND_LOCAL}/v1/survey/create${uid}`, {
+      method: "POST",
+      body: {
         results: answers,
-      }
-    );
+      },
+    });
   }
-  // resp:
-  // survey : [{
-  // question: "",
-  // choices: ["",...]
-  // }...]
 
   return (
     <div className="w-4/5 h-[500px] bg-slate-600 rounded-lg text-white px-14 items-center justify-center text-center flex flex-col overflow-hidden">

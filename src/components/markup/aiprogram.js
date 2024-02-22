@@ -1,7 +1,7 @@
 import React from "react";
 import Btask from "./btask";
-import Convo from "./conversation";
-import Chat from "./chat";
+import Convo from "../client/conversation";
+import Chat from "../client/chat";
 
 function AiProgram({ tasks, conversation, uid }) {
   return (

@@ -1,6 +1,5 @@
-"use client";
 import { Suspense } from "react";
-import Loading from "../loading";
+import Loading from "../../app/loading";
 
 function Btask({ task }) {
   return (

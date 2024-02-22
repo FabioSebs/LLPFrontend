@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Suspense } from "react";
-import Loading from "../loading";
+import Loading from "../../app/loading";
 
 function Convo({ conversations }) {
   return (
