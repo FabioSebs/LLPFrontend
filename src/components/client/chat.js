@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { revalidatePath } from "next/cache";
 import { ContinueConversation } from "@/fetches/requests";

@@ -1,70 +1,98 @@
+"use client";
+
 import Login from "../components/client/login";
-import { cookies } from "next/headers";
-import Survey from "../components/server/survey";
+import Survey from "@/components/client/survey";
 import {
   GetConversations,
   GetFinalSurvey,
   GetPreSurvey,
   GetTask,
 } from "../fetches/requests";
+import { useQuery } from "@tanstack/react-query";
+import { useCookies } from "next-client-cookies";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AiProgram from "../components/markup/aiprogram";
 
-const loginClient = new QueryClient();
+export default function Home() {
+  const cookies = useCookies();
+  const userID = cookies.get("ready");
 
-export default async function Home() {
-  const [uid, hasCookie] = getUIDCookie();
+  var conversation, finalSurvey, tasks, preSurvey;
+  if (userID) {
+    conversations = useQuery({
+      queryKey: "convo",
+      queryFn: () => {
+        GetConversations().then((res) => {
+          return res.data;
+        });
+      },
+    });
 
-  const conversation = await GetConversations(uid);
-  const preSurvey = await GetPreSurvey();
-  const finalSurvey = await GetFinalSurvey();
-  const tasks = await GetTask();
+    finalSurvey = useQuery({
+      queryKey: "final",
+      queryFn: () => {
+        GetFinalSurvey().then((res) => {
+          return res.data;
+        });
+      },
+    });
+
+    tasks = useQuery({
+      queryKey: "tasks",
+      queryFn: () => {
+        GetTask().then((res) => {
+          return res.data;
+        });
+      },
+    });
+  } else {
+    preSurvey = useQuery({
+      queryKey: "pre",
+      queryFn: () => {
+        GetPreSurvey().then((res) => {
+          return res.data;
+        });
+      },
+    });
+  }
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-between p-24 relative overflow-scroll">
-      {hasCookie ? (
-        <>
-          {conversation.data.frequency != 10 ? (
-            <div className="w-full h-full">
-              <AiProgram tasks={tasks} conversation={conversation} uid={uid} />
-            </div>
-          ) : (
-            <div className="w-full h-full">
-              <Survey uid={uid} survey={survey.data} />
-            </div>
-          )}
-        </>
+      {userID ? (
+        // User can access platform
+        ShowAIProgram(
+          conversation.data.frequency,
+          tasks,
+          conversation,
+          uid,
+          finalSurvey
+        )
       ) : (
-        <QueryClientProvider client={loginClient}>
-          <Login />
-        </QueryClientProvider>
+        // User needs to signup and do pre survey
+        <Login survey={preSurvey} />
       )}
     </main>
   );
 }
 
-function ShowPreSurvey() {
-  return <></>;
+function ShowAIProgram(frequency, tasks, conversation, uid, survey) {
+  return (
+    <>
+      {frequency != 10 ? (
+        <div className="w-full h-full">
+          <AiProgram tasks={tasks} conversation={conversation} uid={uid} />
+        </div>
+      ) : (
+        <div className="w-full h-full">{ShowFinalSurvey(uid, survey.data)}</div>
+      )}
+    </>
+  );
 }
 
-function ShowAIProgram() {
-  return <></>;
-}
-
-function ShowFinalSurvey() {
-  return <></>;
-}
-
-function getUIDCookie() {
-  const cookieStore = cookies();
-  const hasCookie = cookieStore.has("uid");
-
-  var uid = "";
-  cookieStore.getAll().map((cookie) => {
-    if (cookie.name == "uid") {
-      uid = cookie.value;
-    }
-  });
-  return [uid, hasCookie];
+function ShowFinalSurvey(uid, survey) {
+  return (
+    <>
+      <Survey survey={survey} uid={uid} title={"Final Assesment Survey"} />
+    </>
+  );
 }
