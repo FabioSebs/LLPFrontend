@@ -1,8 +1,9 @@
+import axios from "axios";
 // Streaming
 export async function GetConversations(uid) {
   try {
     const res = await fetch(
-      `${process.env.BACKEND_URL}/v1/questions/conversation/${uid}`
+      `http://localhost:8000/v1/questions/conversation/${uid}`
     );
     return res.json();
   } catch (error) {
@@ -12,7 +13,7 @@ export async function GetConversations(uid) {
 
 export async function GetPreSurvey() {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL}/v1/survey/pre`);
+    const res = await fetch(`http://localhost:8000/v1/survey/pre`);
     return res.json();
   } catch (error) {
     console.log(error);
@@ -21,7 +22,7 @@ export async function GetPreSurvey() {
 
 export async function GetFinalSurvey() {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL}/v1/survey/final`);
+    const res = await fetch(`http://localhost:8000/v1/survey/final`);
     return res.json();
   } catch (error) {
     console.log(error);
@@ -31,7 +32,7 @@ export async function GetFinalSurvey() {
 // Streaming
 export async function GetTask() {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL}/v1/questions/start`);
+    const res = await fetch(`http://localhost:8000/v1/questions/start`);
     return res.json();
   } catch (error) {
     console.log(error);
@@ -40,16 +41,13 @@ export async function GetTask() {
 
 export async function CreateUser(formData) {
   const { username, age, email } = formData;
-  console.log(formData);
   try {
-    return await fetch(`${process.env.BACKEND_URL}/v1/user/create`, {
-      method: "POST",
-      body: {
-        username,
-        age,
-        email,
-      },
+    const res = await axios.post(`http://localhost:8000/v1/user/create`, {
+      username,
+      age,
+      email,
     });
+    return res.data;
   } catch (error) {
     console.log(error);
   }
@@ -58,12 +56,14 @@ export async function CreateUser(formData) {
 export async function ContinueConversation(formData) {
   const { uid, question } = formData;
   try {
-    await fetch(`${process.env.BACKEND_LOCAL}/v1/questions/create/${uid}`, {
-      method: "POST",
-      body: {
+    const res = await axios.post(
+      `http://localhost:8000/v1/questions/create/${uid}`,
+      {
         question,
-      },
-    });
+      }
+    );
+
+    return res.data;
   } catch (error) {
     console.log(error);
   }
@@ -71,24 +71,23 @@ export async function ContinueConversation(formData) {
 
 export async function SubmitPreSurvey(formData) {
   console.log(formData);
-  const userID = formDatap[0].userID;
 
   const results = formData.map((res) => {
-    const { questionNo, answer, input } = res;
+    const { questionNo, answer, input, userID, type } = res;
     return {
       questionNo,
       answer,
       input,
+      userID,
+      type,
     };
   });
 
   try {
-    await fetch(`${process.env.BACKEND_LOCAL}/v1/survey/create/pre/${userID}`, {
-      method: "POST",
-      body: {
-        results,
-      },
+    const res = await axios.post(`http://localhost:8000/v1/survey/create`, {
+      results,
     });
+    return res.data;
   } catch (error) {
     console.log(error);
   }
@@ -109,12 +108,13 @@ export async function SubmitFinalSurvey(formData) {
   });
 
   try {
-    await fetch(`${process.env.BACKEND_LOCAL}/v1/survey/create/final`, {
-      method: "POST",
-      body: {
+    const res = await axios.post(
+      `http://localhost:8000/v1/survey/create/final`,
+      {
         results,
-      },
-    });
+      }
+    );
+    return res.data;
   } catch (error) {
     console.log(error);
   }

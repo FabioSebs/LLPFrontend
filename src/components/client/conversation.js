@@ -1,17 +1,13 @@
 "use client";
 import React from "react";
-import { Suspense } from "react";
-import Loading from "../../app/loading";
 
 function Convo({ conversations }) {
   return (
     <div>
       {conversations ? (
-        <Suspense fallback={<Loading />}>
-          <div className="h-[350px] w-3/4 overflow-y-scroll flex flex-col bg-orange-200 rounded-lg px-10 my-10">
-            <ConvoList conversations={conversations} />
-          </div>
-        </Suspense>
+        <div className="h-[350px] w-3/4 overflow-y-scroll flex flex-col bg-orange-200 rounded-lg px-10 my-10">
+          <ConvoList conversations={conversations} />
+        </div>
       ) : (
         <></>
       )}

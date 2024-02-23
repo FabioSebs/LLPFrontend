@@ -1,79 +1,110 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { SubmitPreSurvey } from "@/fetches/requests";
-import { useMutation } from "@tanstack/react-query";
-import { useCookies } from "next-client-cookies";
+import { useCookies } from "react-cookie";
+import { GetPreSurvey } from "@/fetches/requests";
 
-function Survey({ survey, uid, title, setFinished }) {
+function Survey({ uid, title }) {
+  const [survey, setSurvey] = useState([]);
   const [body, setBody] = useState([]);
-  const cookies = useCookies();
+  const [cookies, setCookie] = useCookies(["ready", "finished"]);
 
-  // Queries
-  const { mutate, isSuccess, isPending, isError } = useMutation({
-    mutationFn: SubmitPreSurvey,
-    onSuccess: () => {
-      setFinished(true);
-      cookies.set("ready", uid);
-    },
-  });
+  // get survey questions
+  useMemo(() => {
+    GetPreSurvey().then((res) => {
+      console.log(res);
+      setSurvey(res.data);
+    });
+  }, []);
 
-  function runMutate(formData) {
-    mutate(formData);
+  // post survey questions
+  function handleSurveyForm() {
+    SubmitPreSurvey(body).then((res) => {
+      console.log(res);
+      setCookie("finished", 1);
+    });
   }
 
   return (
-    <div className="w-4/5 h-[500px] bg-slate-600 rounded-lg text-white px-14 items-center justify-center text-center flex flex-col overflow-hidden">
-      <h1 className="text-amber-300 pb-10 uppercase font-bold my-5">{title}</h1>
-      <form
-        className="h-full w-full flex flex-col overflow-y-scroll"
-        onSubmit={(_) => runMutate(body)}
-      >
+    <div className="w-4/5 h-[500px] bg-slate-600 rounded-lg px-9 items-center justify-center text-center flex flex-col overflow-hidden text-amber-300 pb-10 uppercase font-bold">
+      <div>
+        <h1 className="text-amber-300 pb-10 uppercase font-bold my-5">
+          {title}
+        </h1>
+      </div>
+      <div className="h-full w-full flex flex-col overflow-y-scroll">
         {survey.map((survey, idx) => {
+          // initial resp
           var response = {
             questionNo: idx,
             userID: uid,
+            type: "pre",
           };
+
+          //form
           return (
-            <div className="w-full h-20 flex flex-col my-6 rounded-lg bg-slate-500 text-white">
+            <div className="w-full h-20 flex flex-col rounded-lg bg-orange-600 text-white my-12">
               {/* question */}
-              <div className="flex gap-2">
-                <h1># {idx}</h1>
-                <h1>{survey.question}</h1>
+              <div className="flex gap-2 text-black justify-center w-full py-3">
+                <h1>{"# " + idx}</h1>
+                <h1 className="italic">{survey.question}</h1>
               </div>
+
               {/* choices */}
-              <select
-                onChange={(e) =>
-                  (response = { ...response, answer: e.currentTarget.value })
-                }
-              >
-                {survey.choices.map((choice, idx) => {
-                  <option value={idx}>{choice}</option>;
-                })}
-              </select>
+              <div className="flex w-full">
+                {survey.choices ? (
+                  <div>
+                    <select
+                      onChange={(e) =>
+                        (response = {
+                          ...response,
+                          answer: e.currentTarget.value,
+                        })
+                      }
+                    >
+                      {survey.choices.map((choice, idx) => {
+                        <option value={idx}>{choice}</option>;
+                      })}
+                    </select>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+
               {/* user input */}
-              <input
-                className="w-full rounded px-2"
-                onChange={(e) =>
-                  (response = { ...response, input: e.currentTarget.value })
-                }
-              />
+              <div className="w-full">
+                <input
+                  className="w-full px-2 text-black"
+                  onChange={(e) =>
+                    (response = { ...response, input: e.currentTarget.value })
+                  }
+                />
+              </div>
 
               {/* confirm answer */}
-              <button
-                className="w-8 h-5 rounded-sm text-white bg-green-600"
-                onClick={(e) => {
-                  setBody([...body, response]);
-                }}
-              >
-                Confirm
-              </button>
+              <div className="w-full flex justify-center items-center">
+                <button
+                  className="w-24 h-10 rounded-sm text-white bg-green-600"
+                  onClick={(e) => {
+                    setBody([...body, response]);
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
           );
         })}
-        <button type="submit" className="px-7 py-4">
+        <button
+          className="px-7 py-4"
+          onClick={() => {
+            handleSurveyForm();
+          }}
+        >
           Submit
         </button>
-      </form>
+      </div>
     </div>
   );
 }

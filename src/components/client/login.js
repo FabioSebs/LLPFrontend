@@ -1,41 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useCookies } from "next-client-cookies";
+import { useCookies } from "react-cookie";
 import { CreateUser } from "@/fetches/requests";
-import { useMutation } from "@tanstack/react-query";
 import { CirclesWithBar } from "react-loader-spinner";
 import Survey from "@/components/client/survey";
 import Image from "next/image";
 
-function Login({ survey }) {
+function Login() {
   const [formData, setFormData] = useState({});
-  const [finished, setFinished] = useState(false);
-  const cookies = useCookies();
-  const userID = cookies.get("user");
+  const [cookies, setCookie] = useCookies(["user", "finished"]);
 
   // Queries
-  const signupUserQuery = useMutation({
-    mutationFn: (data) => {
-      CreateUser(data).then((res) => {
-        return res.json();
-      });
-    },
-    onSuccess: (res) => {
-      cookies.set("user", res.data);
-    },
-  });
+  function handleSignup() {
+    CreateUser(formData).then((res) => {
+      console.log(res);
+      setCookie("user", res.data);
+    });
+  }
 
-  function ShowPreSurvey(uid, survey, setFinished) {
+  function ShowPreSurvey(uid) {
     return (
-      <>
-        <Survey
-          survey={survey.data}
-          uid={uid}
-          title={"Pre Assesment Survey"}
-          setFinished={setFinished}
-        />
-      </>
+      <div className="w-full h-full flex justify-center">
+        <Survey uid={uid} title={"Pre Assesment Survey"} />
+      </div>
     );
   }
 
@@ -87,10 +75,8 @@ function Login({ survey }) {
 
         <button
           className="h-10 w-20 text-green-300 bg-slate-500 hover:scale-105 rounded-xl mt-10 outline"
-          onClick={(e) => {
-            e.preventDefault();
-            console.log(formData);
-            signupUserQuery.mutate(formData);
+          onClick={(_) => {
+            handleSignup();
           }}
         >
           Signup
@@ -100,13 +86,13 @@ function Login({ survey }) {
   }
 
   return (
-    <>
-      {userID
+    <div className="w-full h-full flex justify-center">
+      {cookies.finished
         ? Loading()
-        : finished
-        ? ShowPreSurvey(userID, survey, setFinished)
+        : cookies.user
+        ? ShowPreSurvey(cookies.user)
         : Form()}
-    </>
+    </div>
   );
 }
 
