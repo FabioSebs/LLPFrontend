@@ -5,16 +5,16 @@ import Chat from "../client/chat";
 
 function AiProgram({ tasks, conversation, uid }) {
   return (
-    <>
+    <div className="h-full w-full flex flex-col gap-7">
       {/* BEGINNING TASK */}
-      <Btask task={tasks.data.data} />
+      <Btask task={tasks} />
 
       {/* CONVERSATION  */}
-      <Convo conversations={conversation.data.data.convo} />
+      <Convo conversations={conversation.convo} />
 
       {/* CHAT */}
       <Chat uid={uid} />
-    </>
+    </div>
   );
 }
 

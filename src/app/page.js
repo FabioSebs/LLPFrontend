@@ -2,6 +2,7 @@
 
 import Login from "../components/client/login";
 import Survey from "@/components/client/survey";
+import { CirclesWithBar } from "react-loader-spinner";
 import { GetConversations, GetFinalSurvey, GetTask } from "../fetches/requests";
 
 import { useState, useEffect } from "react";
@@ -9,14 +10,21 @@ import { useCookies } from "react-cookie";
 
 import AiProgram from "../components/markup/aiprogram";
 
+const defaultTemplate = {
+  frequency: 0,
+};
+
 export default function Home() {
-  const [cookies, _] = useCookies(["ready"]);
-  const [conversation, setConversation] = useState();
-  const [finalSurvey, setFinalSurvey] = useState();
-  const [tasks, setTasks] = useState();
+  const [cookies, _] = useCookies(["finished"]);
+  const [loader, setLoader] = useState(false);
+  const [conversation, setConversation] = useState(defaultTemplate);
+  const [finalSurvey, setFinalSurvey] = useState(defaultTemplate);
+  const [tasks, setTasks] = useState(defaultTemplate);
 
   useEffect(() => {
-    if (cookies.ready) {
+    if (cookies.finished) {
+      setLoader(true);
+
       GetConversations().then((res) => {
         setConversation(res.data);
       });
@@ -25,22 +33,30 @@ export default function Home() {
         setFinalSurvey(res.data);
       });
 
-      GetTask().then((res) => {
-        setTasks(res.data);
-      });
+      GetTask()
+        .then((res) => {
+          setTasks(res.data);
+        })
+        .finally(() => {
+          setLoader(false);
+        });
     }
   }, []);
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-between p-24 relative overflow-scroll">
-      {cookies.ready ? (
-        // User can access platform
-        ShowAIProgram(
-          conversation.data.frequency,
-          tasks.data,
-          conversation.data,
-          cookies.ready,
-          finalSurvey.data
+      {cookies.finished ? (
+        loader ? (
+          Loading()
+        ) : (
+          // User can access platform
+          ShowAIProgram(
+            conversation.frequency,
+            tasks,
+            conversation,
+            cookies,
+            finalSurvey
+          )
         )
       ) : (
         // User needs to signup and do pre survey
@@ -69,5 +85,19 @@ function ShowFinalSurvey(uid, survey) {
     <>
       <Survey survey={survey} uid={uid} title={"Final Assesment Survey"} />
     </>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="h-[500px] w-[250px] flex flex-col gap-3 items-center">
+      <CirclesWithBar
+        height="80"
+        width="80"
+        radius="9"
+        color="green"
+        ariaLabel="loading"
+      />
+    </div>
   );
 }
