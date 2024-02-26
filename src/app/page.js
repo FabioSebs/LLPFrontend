@@ -12,6 +12,7 @@ import AiProgram from "../components/markup/aiprogram";
 
 const defaultTemplate = {
   frequency: 0,
+  convo: [{}],
 };
 
 export default function Home() {
@@ -25,17 +26,17 @@ export default function Home() {
     if (cookies.finished) {
       setLoader(true);
 
-      GetConversations().then((res) => {
-        setConversation(res.data);
+      GetConversations(cookies.finished).then((res) => {
+        setConversation(res);
       });
 
       GetFinalSurvey().then((res) => {
-        setFinalSurvey(res.data);
+        setFinalSurvey(res);
       });
 
       GetTask()
         .then((res) => {
-          setTasks(res.data);
+          setTasks(res);
         })
         .finally(() => {
           setLoader(false);
@@ -52,10 +53,10 @@ export default function Home() {
           // User can access platform
           ShowAIProgram(
             conversation.frequency,
-            tasks,
-            conversation,
-            cookies,
-            finalSurvey
+            tasks.data,
+            conversation.data,
+            cookies.finished,
+            finalSurvey.data
           )
         )
       ) : (

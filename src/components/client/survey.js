@@ -8,6 +8,7 @@ function Survey({ uid, title }) {
   const [survey, setSurvey] = useState([]);
   const [body, setBody] = useState([]);
   const [cookies, setCookie] = useCookies(["ready", "finished"]);
+  const [counter, setCounter] = useState(1);
 
   // get survey questions
   useMemo(() => {
@@ -19,9 +20,10 @@ function Survey({ uid, title }) {
 
   // post survey questions
   function handleSurveyForm() {
+    console.log(body);
     SubmitPreSurvey(body).then((res) => {
       console.log(res);
-      setCookie("finished", 1);
+      setCookie("finished", uid);
     });
   }
 
@@ -35,8 +37,10 @@ function Survey({ uid, title }) {
       <div className="h-full w-full flex flex-col overflow-y-scroll">
         {survey.map((survey, idx) => {
           // initial resp
+          const no = idx + 1;
+
           var response = {
-            questionNo: idx,
+            questionNo: no.toString(),
             userID: uid,
             type: "pre",
           };
@@ -46,7 +50,7 @@ function Survey({ uid, title }) {
             <div className="w-full h-20 flex flex-col rounded-lg bg-orange-600 text-white my-12">
               {/* question */}
               <div className="flex gap-2 text-black justify-center w-full py-3">
-                <h1>{"# " + idx}</h1>
+                <h1>{"# " + no}</h1>
                 <h1 className="italic">{survey.question}</h1>
               </div>
 
@@ -62,8 +66,8 @@ function Survey({ uid, title }) {
                         })
                       }
                     >
-                      {survey.choices.map((choice, idx) => {
-                        <option value={idx}>{choice}</option>;
+                      {survey.choices.map((choice, no) => {
+                        <option value={no}>{choice}</option>;
                       })}
                     </select>
                   </div>
@@ -85,9 +89,13 @@ function Survey({ uid, title }) {
               {/* confirm answer */}
               <div className="w-full flex justify-center items-center">
                 <button
-                  className="w-24 h-10 rounded-sm text-white bg-green-600"
+                  className={`w-24 h-10 rounded-sm text-white ${
+                    !counter == no ? "bg-gray-400" : "bg-green-600"
+                  }}`}
                   onClick={(e) => {
+                    e.currentTarget.disabled = true;
                     setBody([...body, response]);
+                    setCounter((prev) => prev + 1);
                   }}
                 >
                   Confirm
@@ -97,7 +105,7 @@ function Survey({ uid, title }) {
           );
         })}
         <button
-          className="px-7 py-4"
+          className="px-7 py-4 mt-7 mb-3"
           onClick={() => {
             handleSurveyForm();
           }}

@@ -9,16 +9,20 @@ function Chat({ uid }) {
   });
 
   function handleSubmit() {
-    ContinueConversation(formData).then(() => {
-      console.log("conversation sent");
-    });
+    ContinueConversation(formData)
+      .then(() => {
+        console.log("conversation sent");
+      })
+      .finally(() => {
+        window.location.reload();
+      });
   }
 
   return (
-    <div className="flex w-full h-16 items-center justify-center gap-3">
+    <div className="flex w-full h-1/6 items-center justify-center gap-3">
       <button
         onClick={() => handleSubmit()}
-        className="w-1/5 h-14 bg-yellow-300 text-white flex justify-center items-center text-center hover:scale-110 scale-100 transition-all duration-100 rounded-xl"
+        className="w-1/5 h-14 bg-yellow-300 text-white flex justify-center items-center text-center hover:scale-110 scale-100 transition-all duration-100 rounded-xl outline-2 border-black"
       >
         ➡️
       </button>
